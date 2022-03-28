@@ -10,8 +10,6 @@ This utility crawler gets the following information on each anime shown in the '
 - Theme(s)
 - Demographic
 
-Also accompanies a Jupyter notebook to visualize the data.
-
 After finishing its crawl, it exports all the info to a dataframe in a .csv file.
 
 This is really barebones at the moment, here's some of the stuff still left to do:
