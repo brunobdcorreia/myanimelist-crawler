@@ -12,7 +12,7 @@ NUM_PAGES = 3
 # Instantiate the browser and open up MAL's top 50 anime.
 options = Options()
 options.headless = True
-browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+browser = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
 url = 'https://myanimelist.net/topanime.php'
 browser.get(url)
 
