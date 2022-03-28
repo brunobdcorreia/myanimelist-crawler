@@ -32,19 +32,19 @@ try:
     for number_of_animes in range(50, (NUM_PAGES * 50) + 50, 50):
         prev_url = browser.current_url
 
-        # Get scores and links to each anime's individual page.
+        # Get links to each anime's individual page.
         results = browser.find_element(By.CLASS_NAME, 'detail')
         animes = results.find_elements(By.XPATH, '//a[contains(@id, "area")]')
-        scores = results.find_elements(By.XPATH, '//span[contains(@class, "score-label")]')
 
         # Clear the links used in the previous page.
         if len(anime_links) > 0:
             anime_links.clear()
 
-        # Store each anime's link and name in their respective lists
+        # Store each anime's link in a list
         for anime in animes:
             anime_links.append(anime.get_attribute("href"))
 
+        # Eliminate duplicate links
         anime_links = list(dict.fromkeys(anime_links))
 
         for link in anime_links:
