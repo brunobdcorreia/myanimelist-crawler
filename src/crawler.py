@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from webdriver_manager.firefox import GeckoDriverManager
 from concurrent import futures
+
 import pandas as pd
 import re
 
@@ -12,7 +13,7 @@ NUM_PAGES = 3
 # Instantiate the browser and open up MAL's top 50 anime.
 options = Options()
 options.headless = True
-browser = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
+browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
 url = 'https://myanimelist.net/topanime.php'
 browser.get(url)
 
@@ -35,6 +36,10 @@ try:
         results = browser.find_element(By.CLASS_NAME, 'detail')
         animes = results.find_elements(By.XPATH, '//a[contains(@id, "area")]')
         scores = results.find_elements(By.XPATH, '//span[contains(@class, "score-label")]')
+
+        # Clear the links used in the previous page.
+        if len(anime_links) > 0:
+            anime_links.clear()
 
         # Store each anime's link and name in their respective lists
         for anime in animes:
@@ -95,15 +100,16 @@ try:
             anime_demographic_by_anime.append(anime_demographic)
 
             # Debug stuff
-            # print(anime_name, anime_score, anime_pop_rank, studio_name, num_episodes, anime_genres, anime_themes, anime_demographic)
+            print(anime_name, anime_score, anime_pop_rank, studio_name, num_episodes, anime_genres, anime_themes, anime_demographic)
 
             # Go back to the previous url.
             browser.get(prev_url)
 
+        print('Moving to page: ' + url + '?limit=' + str(number_of_animes))
+        
         # Go to page containing the next 50 animes.
         browser.get(url + '?limit=' + str(number_of_animes))
 
-# This is just here so the dataframe will still be generated even after a closing the WebDriver prematurely
 except Exception as e:
     print(e)
     
