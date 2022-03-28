@@ -103,6 +103,7 @@ try:
         # Go to page containing the next 50 animes.
         browser.get(url + '?limit=' + str(number_of_animes))
 
+# This is just here so the dataframe will still be generated even after a closing the WebDriver prematurely
 except Exception as e:
     print(e)
     
