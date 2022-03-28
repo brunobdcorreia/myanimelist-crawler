@@ -9,9 +9,10 @@ This utility crawler gets the following information on each anime shown in the '
 - Genres
 - Theme(s)
 - Demographic
+Also accompanies a Jupyter notebook to visualize the data.
 
 After finishing its crawl, it exports all the info to a dataframe in a .csv file.
 
 This is really barebones at the moment, here's some of the stuff still left to do:
-1. Make the Crawler multithreaded: since it currently scrapes one page at a time, it runs __very__ slowly.
+1. Make the Crawler multithreaded: since it currently scrapes one page at a time, it runs **incredibly** slowly.
 2. Refactor the code.
