@@ -13,13 +13,14 @@ NUM_PAGES = 3
 # Instantiate the browser and open up MAL's top 50 anime.
 options = Options()
 options.headless = True
-browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+browser = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
 url = 'https://myanimelist.net/topanime.php'
 browser.get(url)
 
 # Create lists for various info about the anime.
 anime_links = []
 anime_name_by_anime = []
+anime_rank_by_anime = []
 anime_score_by_anime = []
 anime_pop_rank_by_anime = []
 studio_by_anime = []
@@ -28,23 +29,27 @@ anime_genres_by_anime = []
 anime_themes_by_anime = []
 anime_demographic_by_anime = []
 
+# Since the crawler goes through each anime based on their score ranking in descending order, we can just
+# increase the value of this variable in each iteration and it'll correspond to each anime's score rank.
+anime_rank = 1
+
 try:
     for number_of_animes in range(50, (NUM_PAGES * 50) + 50, 50):
         prev_url = browser.current_url
 
-        # Get links to each anime's individual page.
+        # Get scores and links to each anime's individual page.
         results = browser.find_element(By.CLASS_NAME, 'detail')
         animes = results.find_elements(By.XPATH, '//a[contains(@id, "area")]')
+        scores = results.find_elements(By.XPATH, '//span[contains(@class, "score-label")]')
 
         # Clear the links used in the previous page.
         if len(anime_links) > 0:
             anime_links.clear()
 
-        # Store each anime's link in a list
+        # Store each anime's link and name in their respective lists
         for anime in animes:
             anime_links.append(anime.get_attribute("href"))
 
-        # Eliminate duplicate links
         anime_links = list(dict.fromkeys(anime_links))
 
         for link in anime_links:
@@ -55,7 +60,7 @@ try:
 
             anime_name = content_wrapper.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[3]/div[1]/div/div[1]/div/h1/strong').text
 
-            anime_score = content_wrapper.find_element(By.XPATH, '//div[contains(@class, "score-label")]').text
+            anime_score = float(content_wrapper.find_element(By.XPATH, '//div[contains(@class, "score-label")]').text)
 
             anime_pop_rank = content_wrapper.find_element(By.XPATH, '/html/body/div[1]/div[2]/div[3]/div[2]/table/tbody/tr/td[2]/div[1]/table/tbody/tr[1]/td/div[1]/div[1]/div[1]/div[1]/div[2]/span[2]/strong').text
 
@@ -79,7 +84,13 @@ try:
                     info_category = info[0]
                     info_content = info[1]
 
-                    if info_category == 'Episodes':               
+                    if info_category == 'Episodes':
+                        # Some anime have 'Unkown' number of episodes, since they are currently running or haven't been released yet
+                        # If that's the case, we'll consider the number of episodes as 0.
+                        if info_content == 'Unknown':
+                            num_episodes = 0
+
+                        # Else just get the number of episodes normally.
                         num_episodes = int(info_content)
                     elif info_category == 'Genres':
                         for genre in info_content.split(', '):
@@ -91,6 +102,8 @@ try:
                         anime_demographic = info[1]
 
             anime_name_by_anime.append(anime_name)
+            anime_rank_by_anime.append(anime_rank)
+            anime_rank = anime_rank + 1
             anime_score_by_anime.append(anime_score)
             anime_pop_rank_by_anime.append(anime_pop_rank)
             studio_by_anime.append(studio_name)
@@ -100,24 +113,25 @@ try:
             anime_demographic_by_anime.append(anime_demographic)
 
             # Debug stuff
-            print(anime_name, anime_score, anime_pop_rank, studio_name, num_episodes, anime_genres, anime_themes, anime_demographic)
+            print(anime_name, anime_rank - 1, anime_score, anime_pop_rank, studio_name, num_episodes, anime_genres, anime_themes, anime_demographic)
 
             # Go back to the previous url.
             browser.get(prev_url)
 
         print('Moving to page: ' + url + '?limit=' + str(number_of_animes))
-        
+
         # Go to page containing the next 50 animes.
         browser.get(url + '?limit=' + str(number_of_animes))
 
 except Exception as e:
-    print(e)
+    print(e.with_traceback)
     
 finally:
     # Create a dict with names and scores so we can use it to create a dataframe.
     anime_score_dict = {
         'Name': anime_name_by_anime, 
         'Score' : anime_score_by_anime,
+        'Score Rank' : anime_rank_by_anime,
         'Popularity Rank' : anime_pop_rank_by_anime,
         'Studio' : studio_by_anime,
         'Num. of episodes' : num_episodes_per_anime,
