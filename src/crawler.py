@@ -85,7 +85,7 @@ try:
                     info_content = info[1]
 
                     if info_category == 'Episodes':
-                        # Some anime have 'Unkown' number of episodes, since they are currently running or haven't been released yet
+                        # Some anime have 'Unknown' number of episodes, since they are currently running or haven't been released yet
                         # If that's the case, we'll consider the number of episodes as 0.
                         if info_content == 'Unknown':
                             num_episodes = 0
