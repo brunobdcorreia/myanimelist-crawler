@@ -13,6 +13,7 @@ import datetime
 NUM_PAGES = 3
 URL = 'https://myanimelist.net/topanime.php'
 
+# Instantiates the browser. In this case we're using Firefox.
 def get_browser():
     options = Options()
     options.headless = True
@@ -20,6 +21,7 @@ def get_browser():
     print('Succesfully created browser.')
     return browser
 
+# Gets the links to each anime's page in each of the 'Top Ranked Animes' pages.
 def get_links(url):
     anime_links = []
     browser = get_browser()
@@ -40,6 +42,7 @@ def get_links(url):
         print(link)
     return anime_links
 
+# Scrapes info about an anime, given the link to its individual page.
 def scrape_info(link):
 
     print('Called scrape_info() with link: ' + link)
