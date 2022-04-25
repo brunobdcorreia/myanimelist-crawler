@@ -12,5 +12,7 @@ This utility crawler gets the following information on each anime shown in the '
 
 After finishing its crawl, it exports all the info to a dataframe in a .csv file.
 
+The full dataset can be downloaded on [Kaggle](https://www.kaggle.com/datasets/brunobacelardc/myanimelist-top-1000-anime).
+
 ![Dataframe-example](assets/df_example.png)
 Sample picture of the dataframe.
